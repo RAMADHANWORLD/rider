@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noman Restaurant - Rider App</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #d32f2f 0%, #ff5722 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #d32f2f 0%, #ff5722 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .rider-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .login-container {
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: calc(100vh - 100px);
+        }
+
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-text h2 {
+            color: #d32f2f;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .welcome-text p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #d32f2f;
+            background: white;
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d32f2f 0%, #ff5722 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .dashboard-container {
+            padding: 1rem;
+            display: none;
+        }
+
+        .dashboard-container.active {
+            display: block;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #d32f2f;
+        }
+
+        .status-online {
+            border-left-color: #28a745;
+        }
+
+        .status-busy {
+            border-left-color: #ffc107;
+        }
+
+        .status-offline {
+            border-left-color: #dc3545;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+
+        .status-dot.online {
+            background: #28a745;
+        }
+
+        .status-dot.busy {
+            background: #ffc107;
+        }
+
+        .location-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .location-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .location-accuracy {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .coordinates {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #666;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff5722;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .order-number {
+            font-weight: bold;
+            color: #d32f2f;
+            font-size: 1.1rem;
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .customer-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .customer-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .customer-details {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .order-items {
+            margin: 1rem 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .total-amount {
+            background: #d32f2f;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .action-buttons {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d32f2f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #d32f2f;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        .no-orders h3 {
+            color: #d32f2f;
+            margin-bottom: 1rem;
+        }
+
+        .location-btn {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .location-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(23, 162, 184, 0.3);
+        }
+
+        .phone-link {
+            color: #d32f2f;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .phone-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Enhanced location permission styles */
+        .location-permission-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffc107;
+        }
+
+        .permission-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .location-manual-btn {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .location-manual-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .location-manual-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .settings-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
+        }
+
+        .location-help-text {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .permission-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .permission-granted {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .permission-denied {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .permission-prompt {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .app-container {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            
+            .login-container {
+                padding: 1rem;
+            }
+            
+            .login-form {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Floating action style for delivered button */
+        .floating-action {
+            position: fixed;
+            bottom: 2rem;
+            right: 1rem;
+            left: 1rem;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .floating-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(40, 167, 69, 0.4);
+        }
+
+        .floating-action:disabled {
+            opacity: 0.6;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Login Screen -->
+        <div id="login-screen">
+            <div class="header">
+                <div class="logo">🍽️ Noman Restaurant</div>
+                <div class="rider-info">Rider App</div>
+            </div>
+            
+            <div class="login-container">
+                <div class="login-form">
+                    <div class="welcome-text">
+                        <h2>Welcome Back!</h2>
+                        <p>Sign in to start delivering delicious food</p>
+                    </div>
+                    
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="username" class="form-input" required placeholder="Enter your username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="password" class="form-input" required placeholder="Enter your password">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </form>
+                    
+                    <div id="login-error" class="alert alert-error" style="display: none;">
+                        Invalid username or password
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" style="display: none;">
+            <div class="header">
+                <div class="logo">🍽️ Noman Restaurant</div>
+                <div class="rider-info" id="rider-name">Rider Dashboard</div>
+                <button class="logout-btn" onclick="logout()" title="Logout">⟲</button>
+            </div>
+
+            <div class="dashboard-container active">
+                <!-- Rider Status Card -->
+                <div class="status-card" id="status-card">
+                    <div class="status-indicator">
+                        <div class="status-dot" id="status-dot"></div>
+                        <strong id="status-text">Offline</strong>
+                    </div>
+                    <button class="btn btn-primary" id="toggle-status" onclick="toggleOnlineStatus()">Go Online</button>
+                </div>
+
+                <!-- Enhanced Location Card -->
+                <div class="location-card">
+                    <div class="location-status">
+                        <strong>📍 Live Location</strong>
+                        <span class="permission-status" id="permission-status">Checking...</span>
+                    </div>
+                    
+                    <!-- Location Permission Warning -->
+                    <div id="location-permission-warning" class="permission-warning" style="display: none;">
+                        ⚠️ <strong>Location Access Required</strong><br>
+                        Location permissions are needed for delivery tracking and order assignments.
+                    </div>
+                    
+                    <!-- Manual Location Permission Button -->
+                    <button id="request-location-btn" class="location-manual-btn" onclick="requestLocationPermission()" style="display: none;">
+                        📍 Allow Location Access
+                    </button>
+                    
+                    <!-- Settings Button for Manual Permission -->
+                    <button id="open-settings-btn" class="settings-btn" onclick="openLocationSettings()" style="display: none;">
+                        ⚙️ Open Browser Settings
+                    </button>
+                    
+                    <div class="location-accuracy" id="location-accuracy">Getting location...</div>
+                    <div class="coordinates" id="coordinates">Location not available</div>
+                    
+                    <button class="location-btn" onclick="updateLocation()">Update Location</button>
+                    
+                    <div id="location-help-text" class="location-help-text" style="display: none;">
+                        <strong>Chrome Mobile Instructions:</strong><br>
+                        1. Tap the lock icon (🔒) in the address bar<br>
+                        2. Tap "Permissions" or "Site Settings"<br>
+                        3. Find "Location" and set to "Allow"<br>
+                        4. Refresh this page
+                    </div>
+                </div>
+
+                <!-- Orders Container -->
+                <div id="orders-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Loading your orders...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://ifdshbxoaziywoytxbdi.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZHNoYnhvYXppeXdveXR4YmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4MTE5NTEsImV4cCI6MjA3MjM4Nzk1MX0.2umKS_lgtQ6bVP0iDN0Ifs16nWCgxs4SOarcIOpyv8c';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Global variables
+        let currentRider = null;
+        let isOnline = false;
+        let watchId = null;
+        let currentOrders = [];
+        let locationPermissionState = 'unknown';
+        let locationRetryCount = 0;
+        const maxLocationRetries = 3;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            checkLoginStatus();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            
+            // Check for stored login
+            const storedRider = localStorage.getItem('currentRider');
+            if (storedRider) {
+                currentRider = JSON.parse(storedRider);
+                showDashboard();
+            }
+        }
+
+        function checkLoginStatus() {
+            const storedRider = localStorage.getItem('currentRider');
+            if (storedRider) {
+                currentRider = JSON.parse(storedRider);
+                showDashboard();
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // Query riders table for authentication
+                const { data, error } = await supabase
+                    .from('riders')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+
+                if (error || !data) {
+                    showLoginError();
+                    return;
+                }
+
+                // In a real app, you'd hash and compare passwords
+                // For this demo, we'll do simple comparison
+                if (data.password !== password) {
+                    showLoginError();
+                    return;
+                }
+
+                currentRider = data;
+                localStorage.setItem('currentRider', JSON.stringify(currentRider));
+                showDashboard();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError();
+            }
+        }
+
+        function showLoginError() {
+            document.getElementById('login-error').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('login-error').style.display = 'none';
+            }, 3000);
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'block';
+            
+            document.getElementById('rider-name').textContent = `Welcome, ${currentRider.name}`;
+            
+            updateRiderStatus();
+            initializeLocationServices();
+            loadRiderOrders();
+            setupRealtimeSubscription();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                stopLocationTracking();
+                localStorage.removeItem('currentRider');
+                currentRider = null;
+                document.getElementById('login-screen').style.display = 'block';
+                document.getElementById('dashboard-screen').style.display = 'none';
+                document.getElementById('login-form').reset();
+            }
+        }
+
+        // Enhanced Location Permission Management
+        function initializeLocationServices() {
+            console.log('Initializing location services...');
+            updatePermissionStatus('Checking permissions...');
+            
+            // Reset retry count
+            locationRetryCount = 0;
+            
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                showLocationError('Geolocation is not supported by this browser');
+                updatePermissionStatus('Not Supported', 'denied');
+                return;
+            }
+
+            // Check permission state using the Permissions API if available
+            if ('permissions' in navigator) {
+                checkLocationPermissionState();
+            } else {
+                // Fallback for browsers without Permissions API
+                console.log('Permissions API not available, attempting direct access');
+                attemptLocationAccess();
+            }
+        }
+
+        async function checkLocationPermissionState() {
+            try {
+                const permission = await navigator.permissions.query({name: 'geolocation'});
+                console.log('Location permission state:', permission.state);
+                
+                locationPermissionState = permission.state;
+                handlePermissionState(permission.state);
+                
+                // Listen for permission changes
+                permission.addEventListener('change', () => {
+                    console.log('Location permission changed to:', permission.state);
+                    locationPermissionState = permission.state;
+                    handlePermissionState(permission.state);
+                });
+                
+            } catch (error) {
+                console.log('Error checking permission state:', error);
+                // Fallback to direct geolocation attempt
+                attemptLocationAccess();
+            }
+        }
+
+        function handlePermissionState(state) {
+            switch(state) {
+                case 'granted':
+                    updatePermissionStatus('Granted', 'granted');
+                    startLocationTracking();
+                    hideLocationPermissionUI();
+                    break;
+                case 'denied':
+                    updatePermissionStatus('Denied', 'denied');
+                    showLocationPermissionDenied();
+                    break;
+                case 'prompt':
+                    updatePermissionStatus('Prompt Required', 'prompt');
+                    showLocationPermissionPrompt();
+                    break;
+                default:
+                    attemptLocationAccess();
+            }
+        }
+
+        function attemptLocationAccess() {
+            console.log('Attempting location access...');
+            updatePermissionStatus('Requesting...', 'prompt');
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    console.log('Location access successful');
+                    locationPermissionState = 'granted';
+                    updatePermissionStatus('Granted', 'granted');
+                    startLocationTracking();
+                    hideLocationPermissionUI();
+                },
+                (error) => {
+                    console.log('Location access failed:', error);
+                    handleLocationError(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
+        }
+
+        function requestLocationPermission() {
+            console.log('Manual location permission request triggered');
+            
+            const btn = document.getElementById('request-location-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '📍 Requesting Permission...';
+            btn.disabled = true;
+            
+            // Use high accuracy and no cache to force permission prompt
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    console.log('Manual location permission granted');
+                    locationPermissionState = 'granted';
+                    updatePermissionStatus('Granted', 'granted');
+                    startLocationTracking();
+                    hideLocationPermissionUI();
+                    showToast('Location access granted! 🎉', 'success');
+                    
+                    // Reset button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                },
+                (error) => {
+                    console.log('Manual location permission failed:', error);
+                    handleLocationError(error);
+                    
+                    // Reset button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    
+                    // Show guidance for manual settings
+                    if (error.code === error.PERMISSION_DENIED) {
+                        showLocationPermissionDenied();
+                        showToast('Please enable location in browser settings', 'error');
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 0 // Force fresh request
+                }
+            );
+        }
+
+        function openLocationSettings() {
+            console.log('Opening location settings...');
+            
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isChrome = userAgent.includes('chrome') && !userAgent.includes('edg');
+            const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+            
+            // Show instructions based on browser and platform
+            if (isChrome && isMobile) {
+                showChromeAndroidInstructions();
+            } else if (isMobile) {
+                showMobileInstructions();
+            } else {
+                showDesktopInstructions();
+            }
+            
+            // Also show the help text
+            document.getElementById('location-help-text').style.display = 'block';
+        }
+
+        function showChromeAndroidInstructions() {
+            const instructions = `Chrome Mobile Location Settings:
+
+1. Tap the lock icon (🔒) next to the address bar
+2. Tap "Permissions" or "Site settings"
+3. Find "Location" and set to "Allow"
+4. Refresh this page
+
+Alternative method:
+• Chrome Menu (⋮) → Settings → Site Settings → Location → Allow`;
+            
+            alert(instructions);
+        }
+
+        function showMobileInstructions() {
+            const instructions = `Enable Location Access:
+
+1. Tap the address bar area
+2. Look for a location icon (📍) or lock icon (🔒)
+3. Tap it and allow location access
+4. Refresh this page
+
+If that doesn't work:
+• Check your browser settings for location permissions`;
+            
+            alert(instructions);
+        }
+
+        function showDesktopInstructions() {
+            const instructions = `Enable Location Access:
+
+1. Look for a location icon (📍) in the address bar
+2. Click it and choose "Allow"
+3. Refresh this page
+
+Alternative:
+• Browser Settings → Privacy & Security → Site Settings → Location`;
+            
+            alert(instructions);
+        }
+
+        function handleLocationError(error) {
+            console.log('Location error - Code:', error.code, 'Message:', error.message);
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    locationPermissionState = 'denied';
+                    updatePermissionStatus('Denied', 'denied');
+                    showLocationPermissionDenied();
+                    document.getElementById('coordinates').textContent = 'Location access denied by user';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    updatePermissionStatus('Unavailable', 'denied');
+                    showLocationError('GPS unavailable. Please check device settings.');
+                    document.getElementById('coordinates').textContent = 'GPS signal unavailable';
+                    break;
+                case error.TIMEOUT:
+                    updatePermissionStatus('Timeout', 'prompt');
+                    if (locationRetryCount < maxLocationRetries) {
+                        locationRetryCount++;
+                        console.log(`Location timeout, retry ${locationRetryCount}/${maxLocationRetries}`);
+                        setTimeout(() => attemptLocationAccess(), 2000);
+                    } else {
+                        showLocationError('Location request timed out. Please try manually.');
+                        showLocationPermissionPrompt();
+                    }
+                    break;
+                default:
+                    updatePermissionStatus('Error', 'denied');
+                    showLocationError('Unknown location error occurred');
+                    showLocationPermissionPrompt();
+                    break;
+            }
+        }
+
+        function showLocationPermissionPrompt() {
+            document.getElementById('location-permission-warning').style.display = 'block';
+            document.getElementById('request-location-btn').style.display = 'block';
+            document.getElementById('open-settings-btn').style.display = 'none';
+            document.getElementById('location-help-text').style.display = 'none';
+            
+            document.getElementById('location-accuracy').textContent = 'Permission required for location tracking';
+            document.getElementById('coordinates').textContent = 'Tap "Allow Location Access" button above';
+        }
+
+        function showLocationPermissionDenied() {
+            document.getElementById('location-permission-warning').style.display = 'block';
+            document.getElementById('request-location-btn').style.display = 'none';
+            document.getElementById('open-settings-btn').style.display = 'block';
+            document.getElementById('location-help-text').style.display = 'block';
+            
+            document.getElementById('location-accuracy').textContent = 'Location access blocked';
+            document.getElementById('coordinates').textContent = 'Please enable location in browser settings';
+        }
+
+        function hideLocationPermissionUI() {
+            document.getElementById('location-permission-warning').style.display = 'none';
+            document.getElementById('request-location-btn').style.display = 'none';
+            document.getElementById('open-settings-btn').style.display = 'none';
+            document.getElementById('location-help-text').style.display = 'none';
+        }
+
+        function showLocationError(message) {
+            document.getElementById('location-accuracy').textContent = 'Error';
+            document.getElementById('coordinates').textContent = message;
+            console.error('Location error:', message);
+        }
+
+        function updatePermissionStatus(text, status = 'unknown') {
+            const statusElement = document.getElementById('permission-status');
+            statusElement.textContent = text;
+            
+            // Remove existing status classes
+            statusElement.classList.remove('permission-granted', 'permission-denied', 'permission-prompt');
+            
+            // Add appropriate status class
+            if (status === 'granted') {
+                statusElement.classList.add('permission-granted');
+            } else if (status === 'denied') {
+                statusElement.classList.add('permission-denied');
+            } else if (status === 'prompt') {
+                statusElement.classList.add('permission-prompt');
+            }
+        }
+
+        function startLocationTracking() {
+            if (!navigator.geolocation) return;
+            
+            console.log('Starting location tracking...');
+            
+            // Get initial position
+            navigator.geolocation.getCurrentPosition(
+                updateLocationDisplay, 
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
+            
+            // Watch position changes
+            watchId = navigator.geolocation.watchPosition(
+                updateLocationDisplay,
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
+            
+            console.log('Location tracking started with watchId:', watchId);
+        }
+
+        function stopLocationTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+                console.log('Location tracking stopped');
+            }
+        }
+
+        async function updateLocationDisplay(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            console.log('Location updated:', { lat, lng, accuracy });
+
+            document.getElementById('location-accuracy').textContent = `Accuracy: ±${Math.round(accuracy)}m`;
+            document.getElementById('coordinates').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+            // Update rider location in database
+            if (currentRider && isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('riders')
+                        .update({ 
+                            latitude: lat, 
+                            longitude: lng,
+                            location_updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentRider.id);
+
+                    if (error) {
+                        console.error('Error updating location:', error);
+                    } else {
+                        console.log('Location updated in database');
+                    }
+                } catch (error) {
+                    console.error('Error updating location:', error);
+                }
+            }
+        }
+
+        function updateLocation() {
+            console.log('Manual location update requested');
+            document.getElementById('location-accuracy').textContent = 'Updating location...';
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    updateLocationDisplay,
+                    handleLocationError,
+                    { 
+                        enableHighAccuracy: true,
+                        timeout: 15000,
+                        maximumAge: 0 // Force fresh location
+                    }
+                );
+            } else {
+                showLocationError('Geolocation not supported');
+            }
+        }
+
+        async function toggleOnlineStatus() {
+            try {
+                const newStatus = !isOnline;
+                
+                const { error } = await supabase
+                    .from('riders')
+                    .update({ is_online: newStatus })
+                    .eq('id', currentRider.id);
+
+                if (error) {
+                    console.error('Error updating status:', error);
+                    showToast('Failed to update status', 'error');
+                    return;
+                }
+
+                isOnline = newStatus;
+                currentRider.is_online = newStatus;
+                localStorage.setItem('currentRider', JSON.stringify(currentRider));
+                
+                updateRiderStatus();
+                showToast(`You are now ${newStatus ? 'online' : 'offline'}!`, 'success');
+                
+                if (newStatus) {
+                    updateLocation();
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to update status', 'error');
+            }
+        }
+
+        function updateRiderStatus() {
+            isOnline = currentRider.is_online;
+            const statusCard = document.getElementById('status-card');
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            const toggleBtn = document.getElementById('toggle-status');
+
+            if (isOnline) {
+                statusCard.className = 'status-card status-online';
+                statusDot.className = 'status-dot online';
+                statusText.textContent = 'Online - Ready for deliveries';
+                toggleBtn.textContent = 'Go Offline';
+                toggleBtn.className = 'btn btn-danger';
+            } else {
+                statusCard.className = 'status-card status-offline';
+                statusDot.className = 'status-dot';
+                statusText.textContent = 'Offline';
+                toggleBtn.textContent = 'Go Online';
+                toggleBtn.className = 'btn btn-primary';
+            }
+        }
+
+        async function loadRiderOrders() {
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select(`
+                        *,
+                        customers(name, phone, address)
+                    `)
+                    .eq('rider_id', currentRider.id)
+                    .in('status', ['assigned', 'picked'])
+                    .order('id', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching orders:', error);
+                    showToast('Error loading orders', 'error');
+                    return;
+                }
+
+                currentOrders = data || [];
+                displayOrders();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to load orders', 'error');
+            }
+        }
+
+        function displayOrders() {
+            const container = document.getElementById('orders-container');
+            
+            if (currentOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="no-orders">
+                        <h3>🎯 Ready for Action!</h3>
+                        <p>No orders assigned yet. Go online to receive new delivery requests.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentOrders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-number">Order #${order.order_number}</div>
+                        <div class="order-status">${order.status}</div>
+                    </div>
+                    
+                    <div class="customer-info">
+                        <div class="customer-name">👤 ${order.customers?.name || 'Unknown Customer'}</div>
+                        <div class="customer-details">
+                            📞 <a href="tel:${order.customers?.phone || ''}" class="phone-link">${order.customers?.phone || 'No phone'}</a><br>
+                            📍 ${order.customers?.address || order.delivery_address || 'No address provided'}
+                        </div>
+                    </div>
+
+                    <div class="order-items">
+                        <strong>📋 Items:</strong>
+                        ${order.items ? order.items.map(item => `
+                            <div class="item">
+                                <span>${item}</span>
+                            </div>
+                        `).join('') : '<div class="item"><span>Items not loaded</span></div>'}
+                    </div>
+
+                    <div class="total-amount">
+                        💰 Total: PKR ${parseFloat(order.total).toLocaleString()}
+                    </div>
+
+                    <div class="action-buttons">
+                        ${order.status === 'assigned' ? `
+                            <button class="btn btn-primary" onclick="markOrderPicked(${order.id})">
+                                📦 Mark as Picked Up
+                            </button>
+                        ` : ''}
+                        
+                        ${order.status === 'picked' ? `
+                            <button class="floating-action" onclick="markOrderDelivered(${order.id})">
+                                ✅ Mark as Delivered
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function markOrderPicked(orderId) {
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({ status: 'picked' })
+                    .eq('id', orderId);
+
+                if (error) {
+                    console.error('Error marking order picked:', error);
+                    showToast('Failed to update order status', 'error');
+                    return;
+                }
+
+                showToast('Order marked as picked up!', 'success');
+                loadRiderOrders();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to update order', 'error');
+            }
+        }
+
+        async function markOrderDelivered(orderId) {
+            if (confirm('Confirm that the order has been delivered to the customer?')) {
+                try {
+                    const { error } = await supabase
+                        .from('orders')
+                        .update({ status: 'delivered' })
+                        .eq('id', orderId);
+
+                    if (error) {
+                        console.error('Error marking order delivered:', error);
+                        showToast('Failed to update order status', 'error');
+                        return;
+                    }
+
+                    // Make rider available again
+                    const { error: riderError } = await supabase
+                        .from('riders')
+                        .update({ is_online: true })
+                        .eq('id', currentRider.id);
+
+                    if (riderError) {
+                        console.warn('Could not update rider availability:', riderError);
+                    }
+
+                    showToast('🎉 Order delivered successfully!', 'success');
+                    loadRiderOrders();
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Failed to mark order as delivered', 'error');
+                }
+            }
+        }
+
+        function setupRealtimeSubscription() {
+            // Subscribe to orders assigned to this rider
+            supabase
+                .channel(`rider-orders-${currentRider.id}`)
+                .on('postgres_changes', { 
+                    event: '*', 
+                    schema: 'public', 
+                    table: 'orders',
+                    filter: `rider_id=eq.${currentRider.id}`
+                }, (payload) => {
+                    console.log('Order updated:', payload);
+                    loadRiderOrders();
+                    
+                    if (payload.eventType === 'INSERT' || (payload.eventType === 'UPDATE' && payload.new.status === 'assigned')) {
+                        showToast('🔔 New order assigned to you!', 'success');
+                    }
+                })
+                .subscribe();
+        }
+
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type}`;
+            toast.style.position = 'fixed';
+            toast.style.top = '1rem';
+            toast.style.left = '1rem';
+            toast.style.right = '1rem';
+            toast.style.zIndex = '1000';
+            toast.classList.add('toast');
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
+
+        // Enhanced mobile optimization for location access
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Handle app visibility changes for location tracking
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                console.log('App hidden - pausing location tracking');
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                }
+            } else {
+                console.log('App visible - resuming location tracking');
+                if (currentRider && isOnline && locationPermissionState === 'granted') {
+                    startLocationTracking();
+                    loadRiderOrders();
+                }
+            }
+        });
+
+        // Handle network connectivity changes
+        window.addEventListener('online', function() {
+            console.log('Network connection restored');
+            if (currentRider) {
+                loadRiderOrders();
+                if (isOnline && locationPermissionState === 'granted') {
+                    updateLocation();
+                }
+            }
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('Network connection lost');
+            showToast('Connection lost. Some features may be limited.', 'error');
+        });
+
+        // Enhanced error handling for location services
+        window.addEventListener('error', function(event) {
+            if (event.message && event.message.includes('location')) {
+                console.error('Location-related error:', event.error);
+                showLocationError('Location service error occurred');
+            }
+        });
+    </script>
+</body>
+</html>
