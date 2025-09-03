@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Live Location Preview</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; }
+    #map { height: 100vh; width: 100%; }
+    h2 { position: absolute; top: 10px; left: 10px; z-index: 1000;
+         background: white; padding: 5px 10px; border-radius: 6px;
+         box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+  <h2>Live Location: 24.9003, 67.0261</h2>
+  <div id="map"></div>
+
+  <script>
+    // Initialize map at Karachi coordinates
+    var map = L.map('map').setView([24.9003, 67.0261], 14);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add marker
+    L.marker([24.9003, 67.0261])
+      .addTo(map)
+      .bindPopup("<b>Karachi Location</b><br>Lat: 24.9003<br>Lng: 67.0261")
+      .openPopup();
+  </script>
+</body>
+</html>
