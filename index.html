@@ -643,11 +643,15 @@
 
                     <!-- Location Card -->
                     <div class="rider-status-card">
-                        <h4 style="margin-bottom: 1rem;">📍 Current Location</h4>
+                        <h4 style="margin-bottom: 1rem;">📍 Live Location Tracking</h4>
                         <div id="location-info">
                             <p>Location not available</p>
                         </div>
-                        <button class="btn-rider primary" onclick="updateLocation()" style="margin-top: 1rem;">Update Location</button>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="btn-rider primary" onclick="startLiveTracking()" id="start-tracking-btn" style="flex: 1;">🔴 Start Live Tracking</button>
+                            <button class="btn-rider danger" onclick="stopLiveTracking()" id="stop-tracking-btn" style="flex: 1; display: none;">⏹️ Stop Tracking</button>
+                        </div>
+                        <div id="tracking-status" style="margin-top: 0.5rem; text-align: center; font-size: 0.9rem; color: #666;"></div>
                     </div>
 
                     <!-- Quick Actions -->
@@ -673,6 +677,8 @@
         let markers = [];
         let riders = [];
         let currentRider = null;
+        let watchId = null;
+        let lastKnownPosition = null;
 
         // Page Navigation
         function showPage(pageId) {
@@ -922,10 +928,21 @@
 
         // Logout Rider
         function logoutRider() {
+            // Stop live tracking if active
+            if (watchId !== null) {
+                stopLiveTracking();
+            }
+            
             currentRider = null;
+            lastKnownPosition = null;
             document.getElementById('rider-login').style.display = 'block';
             document.getElementById('rider-dashboard').style.display = 'none';
             document.getElementById('rider-login-form').reset();
+            
+            // Reset tracking UI
+            document.getElementById('start-tracking-btn').style.display = 'block';
+            document.getElementById('stop-tracking-btn').style.display = 'none';
+            document.getElementById('tracking-status').innerHTML = '';
         }
 
         // Update Rider Status
@@ -961,48 +978,142 @@
             statusText.textContent = currentRider.status.charAt(0).toUpperCase() + currentRider.status.slice(1);
         }
 
-        // Update Location
-        function updateLocation() {
+        // Start Live Tracking
+        function startLiveTracking() {
             if (!navigator.geolocation) {
                 showAlert('Geolocation is not supported by this browser.', 'error');
                 return;
             }
 
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    const accuracy = position.coords.accuracy;
+            if (!currentRider) {
+                showAlert('Please login first to start tracking.', 'error');
+                return;
+            }
 
-                    try {
-                        const { error } = await supabase
-                            .from('riders')
-                            .update({
-                                latitude: latitude,
-                                longitude: longitude,
-                                location_accuracy: accuracy
-                            })
-                            .eq('rider_id', currentRider.rider_id);
+            // Start watching position with high accuracy
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 5000
+            };
 
-                        if (error) throw error;
-
-                        currentRider.latitude = latitude;
-                        currentRider.longitude = longitude;
-                        currentRider.location_accuracy = accuracy;
-                        
-                        updateLocationDisplay();
-                        showAlert('Location updated successfully!', 'success');
-                        
-                    } catch (error) {
-                        console.error('Error updating location:', error);
-                        showAlert('Error updating location: ' + error.message, 'error');
-                    }
-                },
-                (error) => {
-                    console.error('Geolocation error:', error);
-                    showAlert('Unable to get your location. Please enable location services.', 'error');
-                }
+            watchId = navigator.geolocation.watchPosition(
+                handleLocationUpdate,
+                handleLocationError,
+                options
             );
+
+            // Update UI
+            document.getElementById('start-tracking-btn').style.display = 'none';
+            document.getElementById('stop-tracking-btn').style.display = 'block';
+            document.getElementById('tracking-status').innerHTML = '<span style="color: #28a745;">🟢 Live tracking active</span>';
+            
+            showAlert('Live tracking started! Your location will be updated automatically.', 'success');
+        }
+
+        // Stop Live Tracking
+        function stopLiveTracking() {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+
+            // Update UI
+            document.getElementById('start-tracking-btn').style.display = 'block';
+            document.getElementById('stop-tracking-btn').style.display = 'none';
+            document.getElementById('tracking-status').innerHTML = '<span style="color: #dc3545;">⚫ Tracking stopped</span>';
+            
+            showAlert('Live tracking stopped.', 'success');
+        }
+
+        // Handle Location Updates
+        async function handleLocationUpdate(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const timestamp = new Date(position.timestamp);
+
+            // Check if location has changed significantly (more than 5 meters)
+            if (lastKnownPosition) {
+                const distance = calculateDistance(
+                    lastKnownPosition.latitude, lastKnownPosition.longitude,
+                    latitude, longitude
+                );
+                
+                // Only update if moved more than 5 meters or accuracy improved significantly
+                if (distance < 0.005 && Math.abs(accuracy - lastKnownPosition.accuracy) < 5) {
+                    return;
+                }
+            }
+
+            try {
+                // Update rider location in database
+                const { error } = await supabase
+                    .from('riders')
+                    .update({
+                        latitude: latitude,
+                        longitude: longitude,
+                        location_accuracy: accuracy,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('rider_id', currentRider.rider_id);
+
+                if (error) throw error;
+
+                // Update local rider data
+                currentRider.latitude = latitude;
+                currentRider.longitude = longitude;
+                currentRider.location_accuracy = accuracy;
+                lastKnownPosition = { latitude, longitude, accuracy };
+                
+                // Update location display
+                updateLocationDisplay();
+                
+                // Update tracking status
+                document.getElementById('tracking-status').innerHTML = 
+                    `<span style="color: #28a745;">🟢 Updated at ${timestamp.toLocaleTimeString()}</span>`;
+                
+            } catch (error) {
+                console.error('Error updating location:', error);
+                document.getElementById('tracking-status').innerHTML = 
+                    '<span style="color: #dc3545;">❌ Update failed</span>';
+            }
+        }
+
+        // Handle Location Errors
+        function handleLocationError(error) {
+            console.error('Geolocation error:', error);
+            let errorMessage = 'Location error: ';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += 'Location permission denied';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += 'Location information unavailable';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += 'Location request timed out';
+                    break;
+                default:
+                    errorMessage += 'Unknown error';
+                    break;
+            }
+            
+            document.getElementById('tracking-status').innerHTML = 
+                `<span style="color: #dc3545;">❌ ${errorMessage}</span>`;
+        }
+
+        // Calculate distance between two coordinates (in kilometers)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
         }
 
         // Update Location Display
