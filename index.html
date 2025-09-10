@@ -60,12 +60,11 @@
             background: rgba(255,255,255,0.2);
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
-            white-space: nowrap;
         }
 
         .nav-btn:hover, .nav-btn.active {
@@ -207,13 +206,6 @@
             background: rgba(255,255,255,0.3);
         }
 
-        /* Small buttons for Add Rider and Assign Task */
-        .btn-small {
-            padding: 0.3rem 0.6rem;
-            font-size: 0.7rem;
-            border-radius: 4px;
-        }
-
         #map {
             width: 100%;
             height: 400px;
@@ -285,47 +277,6 @@
             background: #f1f5f9;
             color: #475569;
         }
-
-        /* Rider Names List Styles */
-        .rider-names-list {
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-
-        .rider-name-item {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border-left: 4px solid #d32f2f;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .rider-name-item:hover {
-            background: #e2e8f0;
-            transform: translateX(5px);
-        }
-
-        .rider-name-text {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .rider-status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #6c757d;
-        }
-
-        .rider-status-dot.online { background: #28a745; }
-        .rider-status-dot.busy { background: #ffc107; }
-        .rider-status-dot.offline { background: #6c757d; }
 
         /* Task Assignment Styles */
         .task-assignment-form {
@@ -656,26 +607,6 @@
             transform: translateY(-1px);
         }
 
-        .btn-edit {
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
-            transform: translateY(-1px);
-        }
-
-        .btn-delete {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-            transform: translateY(-1px);
-        }
-
         /* Modal Styles */
         .modal {
             display: none;
@@ -804,7 +735,7 @@
         /* Admin Button Grid */
         .admin-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -814,8 +745,8 @@
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 1rem;
-            font-size: 0.8rem;
+            padding: 1.5rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -823,7 +754,7 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            min-height: 60px;
+            min-height: 80px;
         }
 
         .admin-action-btn:hover {
@@ -901,45 +832,58 @@
             }
 
             .nav-buttons {
-                flex-wrap: wrap;
+                width: 100%;
                 justify-content: center;
+            }
+
+            .rider-container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .rider-content {
+                padding: 1rem;
             }
 
             .admin-actions {
                 grid-template-columns: 1fr;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
+            .admin-action-btn {
+                padding: 1rem;
+                min-height: 60px;
+                font-size: 0.9rem;
             }
 
-            .btn-action {
-                min-width: auto;
-                flex: none;
-                width: 100%;
-                margin-bottom: 0.5rem;
+            .rider-map {
+                height: 200px;
             }
 
-            .rider-actions {
-                flex-direction: column;
+            .rider-stats {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
-        /* 3D Effects */
-        .nav-btn, .btn, .btn-rider, .admin-action-btn {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 0.5rem 1rem;
+            }
 
-        .nav-btn:hover, .btn:hover, .btn-rider:hover, .admin-action-btn:hover {
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
+            .logo-text h1 {
+                font-size: 1.2rem;
+            }
 
-        .section-card {
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-        }
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
 
-        .rider-container {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            .rider-status-card {
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -947,71 +891,61 @@
     <!-- Navigation -->
     <nav class="nav-container">
         <div class="logo-section">
-            <div class="logo-img">🍽️</div>
+            <img src="https://assets.brenqo.io/cdn-cgi/image/width=300,quality=100,format=webp/https://console.brenqo.io/upload/1746705509-noman_logo_new.png" 
+                 alt="Noman Restaurant" class="logo-img">
             <div class="logo-text">
-                <h1>Noman Restaurant</h1>
+                <h1>🍽️ Noman Restaurant</h1>
+                <p>Complete Management System</p>
             </div>
         </div>
         <div class="nav-buttons">
-            <button class="nav-btn active" onclick="showPage('admin')">🏢 Admin Panel</button>
-            <button class="nav-btn" onclick="showPage('rider')">🏍️ Rider Page</button>
+            <button class="nav-btn active" onclick="showPage('admin')">Admin Panel</button>
+            <button class="nav-btn" onclick="showPage('rider')">Rider App</button>
         </div>
     </nav>
 
     <!-- Admin Panel Page -->
     <div id="admin-page" class="page active">
         <div class="container">
-            <h2 style="margin-bottom: 2rem; color: #d32f2f;">🏢 Restaurant Management Dashboard</h2>
-            
             <!-- Admin Action Buttons -->
             <div class="admin-actions">
-                <button class="admin-action-btn btn-small" onclick="showAdminSection('add-rider')">
+                <button class="admin-action-btn" onclick="showAdminSection('add-rider')">
                     ➕ Add New Rider
                 </button>
-                <button class="admin-action-btn btn-small" onclick="showAdminSection('assign-task')">
+                <button class="admin-action-btn" onclick="showAdminSection('assign-task')">
                     📋 Assign Task to Rider
                 </button>
                 <button class="admin-action-btn" onclick="showAdminSection('all-tasks')">
                     📋 All Tasks
                 </button>
-                <button class="admin-action-btn" onclick="showAdminSection('rider-names')">
-                    👥 Rider Names
-                </button>
                 <button class="admin-action-btn" onclick="showAdminSection('dashboard')">
-                    📊 Dashboard
+                    📊 Dashboard Overview
                 </button>
             </div>
 
             <!-- Add Rider Section -->
             <div id="add-rider-section" class="admin-section">
                 <div class="add-rider-form">
-                    <h3 style="margin-bottom: 1.5rem; color: #d32f2f;">➕ Add New Rider</h3>
+                    <h2 style="margin-bottom: 1.5rem; color: #d32f2f;">➕ Add New Rider</h2>
                     <form id="add-rider-form">
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Rider ID</label>
-                                <input type="text" id="rider-id" class="form-input" placeholder="e.g., R001" required>
+                                <input type="text" id="rider-id" class="form-input" placeholder="e.g., NOMAN006" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" id="rider-name" class="form-input" placeholder="Enter full name" required>
+                                <input type="text" id="rider-name" class="form-input" placeholder="Enter rider name" required>
                             </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Phone Number</label>
                                 <input type="tel" id="rider-phone" class="form-input" placeholder="03xxxxxxxxx" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Status</label>
-                                <select id="rider-status" class="form-input" required>
-                                    <option value="offline">Offline</option>
-                                    <option value="online">Online</option>
-                                    <option value="busy">Busy</option>
-                                </select>
-                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Rider</button>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-success" style="flex: 1;">Add Rider to Database</button>
+                            <button type="button" class="btn btn-primary" onclick="clearAllRiders()" style="flex: 1;">🗑️ Clear All Riders</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -1019,8 +953,8 @@
             <!-- Assign Task Section -->
             <div id="assign-task-section" class="admin-section">
                 <div class="task-assignment-form">
-                    <h3 style="margin-bottom: 1.5rem; color: #d32f2f;">📋 Assign Task to Rider</h3>
-                    <form id="assign-task-form" onsubmit="event.preventDefault(); assignTask();">
+                    <h2 style="margin-bottom: 1.5rem; color: #d32f2f;">📋 Assign Task to Rider</h2>
+                    <form id="assign-task-form">
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Select Rider</label>
@@ -1030,14 +964,14 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Task Title</label>
-                                <input type="text" id="task-title" class="form-input" placeholder="Enter task title" required>
+                                <input type="text" id="task-title" class="form-input" placeholder="e.g., Deliver to Downtown" required>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">Task Description</label>
+                            <textarea id="task-description" class="form-input" placeholder="Enter detailed task description..." rows="3" required></textarea>
+                        </div>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <textarea id="task-description" class="form-input" rows="3" placeholder="Enter task description" required></textarea>
-                            </div>
                             <div class="form-group">
                                 <label class="form-label">Priority</label>
                                 <select id="task-priority" class="form-input" required>
@@ -1069,24 +1003,6 @@
                         <div class="loading">
                             <div class="loading-spinner"></div>
                             Loading tasks...
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rider Names Section -->
-            <div id="rider-names-section" class="admin-section">
-                <div class="section-card">
-                    <div class="section-header">
-                        <div class="section-title">
-                            👥 Rider Names
-                        </div>
-                        <button class="btn btn-secondary" onclick="loadRiderNames()">🔄 Refresh</button>
-                    </div>
-                    <div class="rider-names-list" id="rider-names-list">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            Loading riders...
                         </div>
                     </div>
                 </div>
@@ -1170,7 +1086,7 @@
         </div>
     </div>
 
-    <!-- Rider Page -->
+    <!-- Rider App Page -->
     <div id="rider-page" class="page">
         <div class="container">
             <div class="rider-container">
@@ -1213,6 +1129,18 @@
                         </div>
                     </div>
 
+                    <!-- Rider Stats -->
+                    <div class="rider-stats">
+                        <div class="rider-stat">
+                            <div class="rider-stat-value" id="total-rides">0</div>
+                            <div class="rider-stat-label">Total Rides</div>
+                        </div>
+                        <div class="rider-stat">
+                            <div class="rider-stat-value" id="pending-tasks">0</div>
+                            <div class="rider-stat-label">Pending Tasks</div>
+                        </div>
+                    </div>
+
                     <!-- Tasks Card -->
                     <div class="rider-status-card">
                         <h4 style="margin-bottom: 1rem;">📋 My Tasks</h4>
@@ -1222,9 +1150,10 @@
                         <button class="btn-rider primary" onclick="loadRiderTasks()" style="margin-top: 1rem;">🔄 Refresh Tasks</button>
                     </div>
 
-                    <!-- Location Card -->
+                    <!-- Location Card with Map -->
                     <div class="rider-status-card">
                         <h4 style="margin-bottom: 1rem;">📍 Live Location Tracking</h4>
+                        <div id="rider-map" class="rider-map"></div>
                         <div id="location-info">
                             <p>Location not available</p>
                         </div>
@@ -1258,44 +1187,6 @@
                     <div class="loading-spinner"></div>
                     Loading rider details...
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Rider Modal -->
-    <div id="edit-rider-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">✏️ Edit Rider</h2>
-                <button class="modal-close" onclick="closeEditRiderModal()">&times;</button>
-            </div>
-            <div id="edit-rider-content">
-                <form id="edit-rider-form">
-                    <div class="form-group">
-                        <label class="form-label">Rider ID</label>
-                        <input type="text" id="edit-rider-id" class="form-input" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" id="edit-rider-name" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" id="edit-rider-phone" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Status</label>
-                        <select id="edit-rider-status" class="form-input" required>
-                            <option value="offline">Offline</option>
-                            <option value="online">Online</option>
-                            <option value="busy">Busy</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                        <button type="submit" class="btn btn-success" style="flex: 1;">💾 Save Changes</button>
-                        <button type="button" class="btn btn-secondary" onclick="closeEditRiderModal()" style="flex: 1;">❌ Cancel</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
@@ -1419,16 +1310,7 @@
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
-            // Find and activate the correct nav button
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                if (btn.textContent.includes('Admin Panel') && pageId === 'admin') {
-                    btn.classList.add('active');
-                } else if (btn.textContent.includes('Rider Page') && pageId === 'rider') {
-                    btn.classList.add('active');
-                }
-            });
+            event.target.classList.add('active');
             
             // Load data based on page
             if (pageId === 'admin') {
@@ -1438,11 +1320,6 @@
                 initializeMap();
                 showAdminSection('dashboard');
             } else if (pageId === 'rider') {
-                // Ensure rider login is shown by default
-                document.getElementById('rider-login').style.display = 'block';
-                document.getElementById('rider-dashboard').style.display = 'none';
-                // Clear any previous login state
-                currentRider = null;
                 // Start auto-refresh for rider app
                 startAutoRefresh();
             } else {
@@ -1460,252 +1337,6 @@
             
             // Show selected section
             document.getElementById(sectionId + '-section').classList.add('active');
-            
-            // Load data if needed
-            if (sectionId === 'rider-names') {
-                loadRiderNames();
-            }
-        }
-
-        // Load Rider Names
-        async function loadRiderNames() {
-            try {
-                const { data: ridersData, error } = await supabase
-                    .from('riders')
-                    .select('*')
-                    .order('name');
-
-                if (error) throw error;
-
-                const riderNamesContainer = document.getElementById('rider-names-list');
-                
-                if (ridersData.length === 0) {
-                    riderNamesContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No riders registered yet</p>';
-                    return;
-                }
-
-                riderNamesContainer.innerHTML = ridersData.map(rider => `
-                    <div class="rider-name-item" onclick="showRiderDetailsWithActions('${rider.rider_id}')">
-                        <div class="rider-name-text">${rider.name} (${rider.rider_id})</div>
-                        <div class="rider-status-dot ${rider.status}"></div>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error('Error loading rider names:', error);
-                document.getElementById('rider-names-list').innerHTML = '<p style="text-align: center; color: #dc3545; padding: 2rem;">Error loading riders</p>';
-            }
-        }
-
-        // Show Rider Details with Edit/Delete Actions
-        async function showRiderDetailsWithActions(riderId) {
-            const modal = document.getElementById('rider-details-modal');
-            const content = document.getElementById('rider-details-content');
-            
-            // Show modal with loading
-            modal.classList.add('show');
-            content.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    Loading rider details...
-                </div>
-            `;
-
-            try {
-                // Fetch detailed rider information from Supabase
-                const { data: riderData, error } = await supabase
-                    .from('riders')
-                    .select('*')
-                    .eq('rider_id', riderId)
-                    .single();
-
-                if (error) throw error;
-
-                if (!riderData) {
-                    throw new Error('Rider not found');
-                }
-
-                // Get rider tasks count
-                const tasks = await getTasksByRider(riderId);
-                const pendingTasks = tasks.filter(t => t.status === 'pending').length;
-                const completedTasks = tasks.filter(t => t.status === 'completed').length;
-
-                // Display detailed information with action buttons
-                content.innerHTML = `
-                    <div class="detail-item">
-                        <div class="detail-label">👤 Full Name</div>
-                        <div class="detail-value">${riderData.name}</div>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <div class="detail-label">🆔 Rider ID</div>
-                        <div class="detail-value">${riderData.rider_id}</div>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <div class="detail-label">📱 Phone Number</div>
-                        <div class="detail-value">${riderData.phone}</div>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <div class="detail-label">📊 Current Status</div>
-                        <div class="detail-value status ${riderData.status}">${riderData.status}</div>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <div class="detail-label">📋 Task Summary</div>
-                        <div class="detail-value">
-                            Pending: ${pendingTasks} | Completed: ${completedTasks} | Total: ${tasks.length}
-                        </div>
-                    </div>
-                    
-                    ${riderData.latitude && riderData.longitude ? `
-                        <div class="detail-item">
-                            <div class="detail-label">📍 Current Location</div>
-                            <div class="detail-value">
-                                Lat: ${riderData.latitude.toFixed(6)}<br>
-                                Lng: ${riderData.longitude.toFixed(6)}
-                                ${riderData.location_accuracy ? `<br>Accuracy: ±${riderData.location_accuracy.toFixed(1)}m` : ''}
-                            </div>
-                        </div>
-                    ` : `
-                        <div class="detail-item">
-                            <div class="detail-label">📍 Location</div>
-                            <div class="detail-value">Location not available</div>
-                        </div>
-                    `}
-                    
-                    <div class="detail-item">
-                        <div class="detail-label">📅 Join Date</div>
-                        <div class="detail-value">${new Date(riderData.created_at).toLocaleDateString()}</div>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <div class="detail-label">🕒 Last Activity</div>
-                        <div class="detail-value">
-                            ${riderData.updated_at ? new Date(riderData.updated_at).toLocaleString() : 'Never'}
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button class="btn-action btn-edit" onclick="openEditRiderModal('${riderData.rider_id}'); closeRiderDetailsModal();" style="flex: 1;">
-                            ✏️ Edit Rider
-                        </button>
-                        <button class="btn-action btn-delete" onclick="confirmDeleteRider('${riderData.rider_id}', '${riderData.name}'); closeRiderDetailsModal();" style="flex: 1;">
-                            🗑️ Delete Rider
-                        </button>
-                        ${riderData.latitude && riderData.longitude ? `
-                            <button class="btn-action btn-locate" onclick="locateRiderOnMap('${riderData.rider_id}'); closeRiderDetailsModal();" style="flex: 1;">
-                                🗺️ Locate on Map
-                            </button>
-                        ` : ''}
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error('Error loading rider details:', error);
-                content.innerHTML = `
-                    <div style="text-align: center; color: #dc3545; padding: 2rem;">
-                        <p>❌ Error loading rider details</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Open Edit Rider Modal
-        async function openEditRiderModal(riderId) {
-            try {
-                const { data: riderData, error } = await supabase
-                    .from('riders')
-                    .select('*')
-                    .eq('rider_id', riderId)
-                    .single();
-
-                if (error) throw error;
-
-                // Populate form with current data
-                document.getElementById('edit-rider-id').value = riderData.rider_id;
-                document.getElementById('edit-rider-name').value = riderData.name;
-                document.getElementById('edit-rider-phone').value = riderData.phone;
-                document.getElementById('edit-rider-status').value = riderData.status;
-
-                // Show modal
-                document.getElementById('edit-rider-modal').classList.add('show');
-
-            } catch (error) {
-                console.error('Error loading rider for edit:', error);
-                showAlert('Error loading rider data', 'error');
-            }
-        }
-
-        // Close Edit Rider Modal
-        function closeEditRiderModal() {
-            document.getElementById('edit-rider-modal').classList.remove('show');
-        }
-
-        // Update Rider
-        async function updateRider() {
-            const riderId = document.getElementById('edit-rider-id').value;
-            const name = document.getElementById('edit-rider-name').value;
-            const phone = document.getElementById('edit-rider-phone').value;
-            const status = document.getElementById('edit-rider-status').value;
-
-            if (!name || !phone) {
-                showAlert('Please fill in all required fields', 'error');
-                return;
-            }
-
-            try {
-                const { error } = await supabase
-                    .from('riders')
-                    .update({
-                        name: name,
-                        phone: phone,
-                        status: status,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('rider_id', riderId);
-
-                if (error) throw error;
-
-                showAlert('Rider updated successfully!', 'success');
-                closeEditRiderModal();
-                loadRiderNames();
-                loadRiders();
-
-            } catch (error) {
-                console.error('Error updating rider:', error);
-                showAlert('Error updating rider. Please try again.', 'error');
-            }
-        }
-
-        // Confirm Delete Rider
-        function confirmDeleteRider(riderId, riderName) {
-            if (confirm(`Are you sure you want to delete rider "${riderName}" (${riderId})? This action cannot be undone.`)) {
-                deleteRider(riderId);
-            }
-        }
-
-        // Delete Rider
-        async function deleteRider(riderId) {
-            try {
-                const { error } = await supabase
-                    .from('riders')
-                    .delete()
-                    .eq('rider_id', riderId);
-
-                if (error) throw error;
-
-                showAlert('Rider deleted successfully!', 'success');
-                loadRiderNames();
-                loadRiders();
-                loadRiderDropdown();
-
-            } catch (error) {
-                console.error('Error deleting rider:', error);
-                showAlert('Error deleting rider. Please try again.', 'error');
-            }
         }
 
         // Task Assignment Functions
@@ -1860,22 +1491,47 @@
                 await updateTaskStatus(taskId, 'completed');
                 showAlert('Task marked as completed!', 'success');
                 loadRiderTasks();
-                loadAllTasks();
+                
+                // Also refresh the admin view if it's active
+                if (document.getElementById('admin-page').classList.contains('active')) {
+                    loadAllTasks();
+                }
             } catch (error) {
                 console.error('Error finishing task:', error);
-                showAlert('Error updating task status', 'error');
+                showAlert('Error finishing task. Please try again.', 'error');
             }
         }
+
+        // Initialize Database on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initTaskDB();
+                console.log('Task database initialized successfully');
+            } catch (error) {
+                console.error('Error initializing task database:', error);
+            }
+            
+            // Initialize the application
+            loadRiders();
+            loadRiderDropdown();
+            loadAllTasks();
+            initializeMap();
+        });
+
+        // Add event listeners
+        document.getElementById('assign-task-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            assignTask();
+        });
 
         // Rider Management Functions
         async function addRider() {
             const riderId = document.getElementById('rider-id').value;
             const name = document.getElementById('rider-name').value;
             const phone = document.getElementById('rider-phone').value;
-            const status = document.getElementById('rider-status').value;
 
             if (!riderId || !name || !phone) {
-                showAlert('Please fill in all required fields', 'error');
+                showAlert('Please fill in all fields', 'error');
                 return;
             }
 
@@ -1887,75 +1543,170 @@
                             rider_id: riderId,
                             name: name,
                             phone: phone,
-                            status: status,
+                            status: 'offline',
                             created_at: new Date().toISOString()
                         }
                     ]);
 
-                if (error) {
-                    if (error.code === '23505') {
-                        showAlert('Rider ID already exists. Please use a different ID.', 'error');
-                        return;
-                    }
-                    throw error;
-                }
+                if (error) throw error;
 
                 showAlert('Rider added successfully!', 'success');
-                
-                // Clear form
                 document.getElementById('add-rider-form').reset();
-                
-                // Refresh data
                 loadRiders();
                 loadRiderDropdown();
-                loadRiderNames();
-                
+
             } catch (error) {
                 console.error('Error adding rider:', error);
-                showAlert('Error adding rider. Please try again.', 'error');
+                if (error.code === '23505') {
+                    showAlert('Rider ID already exists. Please use a different ID.', 'error');
+                } else {
+                    showAlert('Error adding rider. Please try again.', 'error');
+                }
             }
         }
 
-        // Calculate distance between two coordinates (in kilometers)
-        function calculateDistance(lat1, lng1, lat2, lng2) {
-            const R = 6371; // Earth's radius in kilometers
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLng = (lng2 - lng1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                    Math.sin(dLng/2) * Math.sin(dLng/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
+        async function loadRiders() {
+            try {
+                const { data: ridersData, error } = await supabase
+                    .from('riders')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-        // Handle location errors
-        function handleLocationError(error) {
-            console.error('Location error:', error);
-            let message = 'Location access failed';
-            
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    message = 'Location access denied by user';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = 'Location information unavailable';
-                    break;
-                case error.TIMEOUT:
-                    message = 'Location request timed out';
-                    break;
+                if (error) throw error;
+
+                riders = ridersData || [];
+                displayRiders();
+                updateStats();
+                updateMap();
+
+            } catch (error) {
+                console.error('Error loading riders:', error);
+                document.getElementById('riders-list').innerHTML = '<p style="text-align: center; color: #dc3545; padding: 2rem;">Error loading riders</p>';
             }
-            
-            document.getElementById('tracking-status').innerHTML = 
-                `<span style="color: #dc3545;">❌ ${message}</span>`;
         }
 
-        // Rider Authentication Functions
+        function displayRiders() {
+            const ridersList = document.getElementById('riders-list');
+            
+            if (riders.length === 0) {
+                ridersList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No riders added yet</p>';
+                return;
+            }
+
+            ridersList.innerHTML = riders.map(rider => `
+                <div class="rider-card ${rider.status}">
+                    <div class="rider-header">
+                        <div class="rider-info">
+                            <h4>${rider.name}</h4>
+                            <p>ID: ${rider.rider_id} | Phone: ${rider.phone}</p>
+                            ${rider.latitude && rider.longitude ? 
+                                `<p class="coordinates">📍 ${rider.latitude.toFixed(6)}, ${rider.longitude.toFixed(6)}</p>` 
+                                : '<p class="coordinates">📍 Location not available</p>'
+                            }
+                        </div>
+                        <span class="status-badge ${rider.status}">${rider.status}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.75rem;">
+                        Last update: ${rider.updated_at ? new Date(rider.updated_at).toLocaleString() : 'Never'}
+                    </div>
+                    <div class="rider-actions">
+                        ${rider.latitude && rider.longitude ? 
+                            `<button class="btn-action btn-locate" onclick="locateRiderOnMap('${rider.rider_id}')">
+                                🗺️ Locate on Map
+                            </button>` 
+                            : '<button class="btn-action btn-locate" disabled>🗺️ No Location</button>'
+                        }
+                        <button class="btn-action btn-details" onclick="showRiderDetails('${rider.rider_id}')">
+                            👤 View Details
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const total = riders.length;
+            const online = riders.filter(r => r.status === 'online').length;
+            const busy = riders.filter(r => r.status === 'busy').length;
+            const offline = riders.filter(r => r.status === 'offline').length;
+
+            document.getElementById('total-riders').textContent = total;
+            document.getElementById('online-riders').textContent = online;
+            document.getElementById('busy-riders').textContent = busy;
+            document.getElementById('offline-riders').textContent = offline;
+        }
+
+        async function clearAllRiders() {
+            if (!confirm('Are you sure you want to delete all riders? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('riders')
+                    .delete()
+                    .neq('rider_id', ''); // Delete all records
+
+                if (error) throw error;
+
+                showAlert('All riders cleared successfully!', 'success');
+                loadRiders();
+                loadRiderDropdown();
+
+            } catch (error) {
+                console.error('Error clearing riders:', error);
+                showAlert('Error clearing riders. Please try again.', 'error');
+            }
+        }
+
+        // Map Functions
+        function initializeMap() {
+            if (map) {
+                map.remove();
+            }
+
+            map = L.map('map').setView([24.8607, 67.0011], 12); // Karachi coordinates
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            updateMap();
+        }
+
+        function updateMap() {
+            if (!map) return;
+
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // Add markers for riders with location
+            riders.forEach(rider => {
+                if (rider.latitude && rider.longitude) {
+                    const marker = L.marker([rider.latitude, rider.longitude])
+                        .addTo(map)
+                        .bindPopup(`
+                            <strong>${rider.name}</strong><br>
+                            ID: ${rider.rider_id}<br>
+                            Status: ${rider.status}<br>
+                            Phone: ${rider.phone}
+                        `);
+                    
+                    markers.push(marker);
+                }
+            });
+
+            updateLastUpdate();
+        }
+
+        // Rider App Functions
         async function loginRider() {
             const riderId = document.getElementById('login-rider-id').value;
             const phone = document.getElementById('login-phone').value;
 
             if (!riderId || !phone) {
-                showAlert('Please enter both Rider ID and Phone Number', 'error');
+                showAlert('Please fill in all fields', 'error');
                 return;
             }
 
@@ -1967,53 +1718,48 @@
                     .eq('phone', phone)
                     .single();
 
-                if (error || !riderData) {
-                    showAlert('Invalid Rider ID or Phone Number', 'error');
+                if (error) throw error;
+
+                if (!riderData) {
+                    showAlert('Invalid credentials. Please check your Rider ID and phone number.', 'error');
                     return;
                 }
 
-                // Store current rider
                 currentRider = riderData;
-                
-                // Update UI
-                document.getElementById('rider-login').style.display = 'none';
-                document.getElementById('rider-dashboard').style.display = 'block';
                 document.getElementById('rider-name-display').textContent = riderData.name;
                 
-                // Update status display
-                updateRiderStatusDisplay(riderData.status);
+                // Show dashboard and hide login
+                document.getElementById('rider-login').style.display = 'none';
+                document.getElementById('rider-dashboard').style.display = 'block';
                 
-                // Initialize rider map
-                initializeRiderMap();
-                
-                // Load rider tasks
+                updateRiderStatusDisplay();
+                updateLocationDisplay();
                 loadRiderTasks();
+                initializeRiderMap();
+                startAutoRefresh();
                 
-                showAlert(`Welcome back, ${riderData.name}!`, 'success');
-                
+                showAlert('Login successful!', 'success');
+
             } catch (error) {
-                console.error('Login error:', error);
-                showAlert('Login failed. Please try again.', 'error');
+                console.error('Error during login:', error);
+                showAlert('Login failed. Please check your credentials.', 'error');
             }
         }
 
         function logoutRider() {
-            // Stop tracking if active
-            if (watchId !== null) {
-                stopLiveTracking();
-            }
-            
-            // Clear rider data
             currentRider = null;
+            stopLiveTracking();
+            stopAutoRefresh();
+            stopBackgroundLocation();
             
-            // Update UI
+            // Show login and hide dashboard
             document.getElementById('rider-login').style.display = 'block';
             document.getElementById('rider-dashboard').style.display = 'none';
             
             // Clear form
             document.getElementById('rider-login-form').reset();
             
-            showAlert('Logged out successfully', 'success');
+            showAlert('Logged out successfully!', 'success');
         }
 
         async function updateRiderStatus(status) {
@@ -2034,130 +1780,161 @@
                 if (error) throw error;
 
                 currentRider.status = status;
-                updateRiderStatusDisplay(status);
-                showAlert(`Status updated to ${status}`, 'success');
+                updateRiderStatusDisplay();
+                showAlert(`Status updated to ${status}!`, 'success');
 
             } catch (error) {
                 console.error('Error updating status:', error);
-                showAlert('Failed to update status', 'error');
+                showAlert('Error updating status. Please try again.', 'error');
             }
         }
 
-        function updateRiderStatusDisplay(status) {
+        function updateRiderStatusDisplay() {
+            if (!currentRider) return;
+            
             const statusDot = document.getElementById('rider-status-dot');
             const statusText = document.getElementById('rider-status-text');
             
-            statusDot.className = 'status-dot ' + status;
-            statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusDot.className = 'status-dot ' + currentRider.status;
+            statusText.textContent = currentRider.status.charAt(0).toUpperCase() + currentRider.status.slice(1);
         }
 
-        // Map Initialization
-        function initializeMap() {
-            if (map) {
-                map.remove();
-            }
-
-            map = L.map('map').setView([24.8607, 67.0011], 11); // Karachi coordinates
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            loadRiders();
-        }
-
-        // Load and Display Riders
-        async function loadRiders() {
-            try {
-                const { data: ridersData, error } = await supabase
-                    .from('riders')
-                    .select('*')
-                    .order('name');
-
-                if (error) throw error;
-
-                riders = ridersData;
-                updateStats();
-                updateRidersDisplay();
-                updateMap();
-                updateLastUpdate();
-
-            } catch (error) {
-                console.error('Error loading riders:', error);
-                document.getElementById('riders-list').innerHTML = '<p style="text-align: center; color: #dc3545; padding: 2rem;">Error loading riders</p>';
-            }
-        }
-
-        // Update Statistics
-        function updateStats() {
-            const totalRiders = riders.length;
-            const onlineRiders = riders.filter(r => r.status === 'online').length;
-            const busyRiders = riders.filter(r => r.status === 'busy').length;
-            const offlineRiders = riders.filter(r => r.status === 'offline').length;
-
-            document.getElementById('total-riders').textContent = totalRiders;
-            document.getElementById('online-riders').textContent = onlineRiders;
-            document.getElementById('busy-riders').textContent = busyRiders;
-            document.getElementById('offline-riders').textContent = offlineRiders;
-        }
-
-        // Update Riders Display
-        function updateRidersDisplay() {
-            const ridersList = document.getElementById('riders-list');
-            
-            if (riders.length === 0) {
-                ridersList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No riders registered yet</p>';
+        // Start Live Tracking
+        function startLiveTracking() {
+            if (!navigator.geolocation) {
+                showAlert('Geolocation is not supported by this browser.', 'error');
                 return;
             }
 
-            ridersList.innerHTML = riders.map(rider => `
-                <div class="rider-card ${rider.status}">
-                    <div class="rider-header">
-                        <div class="rider-info">
-                            <h4>${rider.name}</h4>
-                            <p>ID: ${rider.rider_id} | Phone: ${rider.phone}</p>
-                            ${rider.latitude && rider.longitude ? 
-                                `<p>Location: ${rider.latitude.toFixed(4)}, ${rider.longitude.toFixed(4)}</p>` : 
-                                '<p>Location: Not available</p>'
-                            }
-                        </div>
-                        <div class="status-badge ${rider.status}">${rider.status}</div>
-                    </div>
-                    <div class="rider-actions">
-                        <button class="btn-action btn-locate" onclick="locateRiderOnMap('${rider.rider_id}')">
-                            🗺️ Locate
-                        </button>
-                        <button class="btn-action btn-details" onclick="showRiderDetails('${rider.rider_id}')">
-                            👁️ Details
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+            if (!currentRider) {
+                showAlert('Please login first to start tracking.', 'error');
+                return;
+            }
+
+            // Start watching position with high accuracy
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 5000
+            };
+
+            watchId = navigator.geolocation.watchPosition(
+                handleLocationUpdate,
+                handleLocationError,
+                options
+            );
+
+            // Update UI
+            document.getElementById('start-tracking-btn').style.display = 'none';
+            document.getElementById('stop-tracking-btn').style.display = 'block';
+            document.getElementById('tracking-status').innerHTML = '<span style="color: #28a745;">🟢 Live tracking active</span>';
+            
+            showAlert('Live tracking started! Your location will be updated automatically.', 'success');
         }
 
-        // Update Map with Rider Locations
-        function updateMap() {
-            if (!map) return;
+        // Stop Live Tracking
+        function stopLiveTracking() {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
 
-            // Clear existing markers
-            markers.forEach(marker => map.removeLayer(marker));
-            markers = [];
+            // Update UI
+            document.getElementById('start-tracking-btn').style.display = 'block';
+            document.getElementById('stop-tracking-btn').style.display = 'none';
+            document.getElementById('tracking-status').innerHTML = '<span style="color: #dc3545;">⚫ Tracking stopped</span>';
+            
+            showAlert('Live tracking stopped.', 'success');
+        }
 
-            // Add markers for riders with location
-            riders.forEach(rider => {
-                if (rider.latitude && rider.longitude) {
-                    const marker = L.marker([rider.latitude, rider.longitude])
-                        .bindPopup(`
-                            <strong>${rider.name}</strong><br>
-                            ID: ${rider.rider_id}<br>
-                            Status: ${rider.status}<br>
-                            Phone: ${rider.phone}
-                        `)
-                        .addTo(map);
-                    
-                    markers.push(marker);
+        // Handle Location Updates
+        async function handleLocationUpdate(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const timestamp = new Date(position.timestamp);
+
+            // Check if location has changed significantly (more than 5 meters)
+            if (lastKnownPosition) {
+                const distance = calculateDistance(
+                    lastKnownPosition.latitude, lastKnownPosition.longitude,
+                    latitude, longitude
+                );
+                
+                // Only update if moved more than 5 meters or accuracy improved significantly
+                if (distance < 0.005 && Math.abs(accuracy - lastKnownPosition.accuracy) < 5) {
+                    return;
                 }
-            });
+            }
+
+            try {
+                // Update rider location in database
+                const { error } = await supabase
+                    .from('riders')
+                    .update({
+                        latitude: latitude,
+                        longitude: longitude,
+                        location_accuracy: accuracy,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('rider_id', currentRider.rider_id);
+
+                if (error) throw error;
+
+                // Update local rider data
+                currentRider.latitude = latitude;
+                currentRider.longitude = longitude;
+                currentRider.location_accuracy = accuracy;
+                lastKnownPosition = { latitude, longitude, accuracy };
+                
+                // Update location display
+                updateLocationDisplay();
+                
+                // Update tracking status
+                document.getElementById('tracking-status').innerHTML = 
+                    `<span style="color: #28a745;">🟢 Updated at ${timestamp.toLocaleTimeString()}</span>`;
+                
+            } catch (error) {
+                console.error('Error updating location:', error);
+                document.getElementById('tracking-status').innerHTML = 
+                    '<span style="color: #dc3545;">❌ Update failed</span>';
+            }
+        }
+
+        // Handle Location Errors
+        function handleLocationError(error) {
+            console.error('Geolocation error:', error);
+            let errorMessage = 'Location error: ';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += 'Location permission denied';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += 'Location information unavailable';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += 'Location request timed out';
+                    break;
+                default:
+                    errorMessage += 'Unknown error';
+                    break;
+            }
+            
+            document.getElementById('tracking-status').innerHTML = 
+                `<span style="color: #dc3545;">❌ ${errorMessage}</span>`;
+        }
+
+        // Calculate distance between two coordinates (in kilometers)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
         }
 
         // Update Location Display
@@ -2167,9 +1944,7 @@
             if (currentRider && currentRider.latitude && currentRider.longitude) {
                 locationInfo.innerHTML = `
                     <div class="coordinates">
-                        <strong>📍 Current Location:</strong><br>
-                        Latitude: ${currentRider.latitude.toFixed(6)}<br>
-                        Longitude: ${currentRider.longitude.toFixed(6)}
+                        📍 ${currentRider.latitude.toFixed(6)}, ${currentRider.longitude.toFixed(6)}
                         ${currentRider.location_accuracy ? `<br>Accuracy: ±${currentRider.location_accuracy.toFixed(1)}m` : ''}
                     </div>
                 `;
@@ -2213,11 +1988,6 @@
         document.getElementById('rider-login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             loginRider();
-        });
-
-        document.getElementById('edit-rider-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateRider();
         });
 
         // Locate Rider on Map
@@ -2367,12 +2137,8 @@
         // Close modal when clicking outside
         document.addEventListener('click', function(event) {
             const modal = document.getElementById('rider-details-modal');
-            const editModal = document.getElementById('edit-rider-modal');
             if (event.target === modal) {
                 closeRiderDetailsModal();
-            }
-            if (event.target === editModal) {
-                closeEditRiderModal();
             }
         });
 
@@ -2630,13 +2396,6 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize database
-            initTaskDB().then(() => {
-                console.log('Task database initialized');
-            }).catch(error => {
-                console.error('Database initialization failed:', error);
-            });
-
             // Request wake lock when app starts
             requestWakeLock();
             
